@@ -1,0 +1,158 @@
+/* Kanban Board Styles */
+.kanban-board {
+  @apply min-h-screen bg-background;
+}
+
+.kanban-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: theme(colors.border) theme(colors.background);
+}
+
+.kanban-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.kanban-scroll::-webkit-scrollbar-track {
+  @apply bg-background rounded-lg;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-lg;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Task Card Animations */
+.task-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.dragging {
+  transform: rotate(3deg) scale(1.02);
+  opacity: 0.8;
+  z-index: 50;
+}
+
+/* Global dragging state */
+.kanban-board[data-dragging="true"] .task-card:not(.dragging) {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.kanban-board[data-dragging="true"] .column-drop-zone {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 2px dashed rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Column Drop Zone */
+.column-drop-zone {
+  transition: all 0.2s ease-in-out;
+}
+
+.column-drop-zone.drag-over {
+  @apply bg-blue-50 border-blue-300 scale-[1.02];
+}
+
+.column-drop-zone.drag-over::after {
+  content: '';
+  @apply absolute inset-0 bg-blue-100/50 rounded-lg;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Priority Badges */
+.priority-low {
+  @apply bg-green-100 text-green-800 border-green-200;
+}
+
+.priority-medium {
+  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+}
+
+.priority-high {
+  @apply bg-red-100 text-red-800 border-red-200;
+}
+
+/* Column Status Colors */
+.status-todo {
+  @apply bg-slate-100 text-slate-700 border-slate-200;
+}
+
+.status-in-progress {
+  @apply bg-blue-100 text-blue-700 border-blue-200;
+}
+
+.status-done {
+  @apply bg-green-100 text-green-700 border-green-200;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kanban-columns {
+    @apply gap-4;
+  }
+  
+  .kanban-column {
+    @apply min-w-72 max-w-72;
+  }
+  
+  .kanban-board-header {
+    @apply flex-col gap-4;
+  }
+}
+
+/* Text Truncation Utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Loading States */
+.kanban-skeleton {
+  @apply animate-pulse;
+}
+
+.kanban-skeleton .skeleton-text {
+  @apply bg-muted rounded h-4 w-full;
+}
+
+.kanban-skeleton .skeleton-text.short {
+  @apply w-3/4;
+}
+
+.kanban-skeleton .skeleton-avatar {
+  @apply bg-muted rounded-full h-6 w-6;
+}
+
+/* Focus Styles for Accessibility */
+.task-card:focus-visible {
+  @apply outline-2 outline-offset-2 outline-ring;
+}
+
+.column-header:focus-visible {
+  @apply outline-2 outline-offset-2 outline-ring;
+}
+
+/* Smooth Transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}

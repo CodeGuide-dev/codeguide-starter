@@ -1,0 +1,95 @@
+/* Import kanban component styles */
+@import '../../../components/kanban/kanban.css';
+
+/* Kanban Page Specific Styles */
+.kanban-page {
+  @apply min-h-screen bg-background;
+  overflow: hidden;
+}
+
+.kanban-page .kanban-board {
+  height: calc(100vh - var(--header-height, 64px));
+  padding: 1rem;
+}
+
+/* Override scrollbar for kanban page */
+.kanban-page .kanban-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+}
+
+.kanban-page .kanban-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.kanban-page .kanban-scroll::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+  border-radius: 3px;
+}
+
+.kanban-page .kanban-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.kanban-page .kanban-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Loading state */
+.kanban-loading {
+  @apply flex items-center justify-center h-full;
+}
+
+.kanban-loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+}
+
+/* Error state */
+.kanban-error {
+  @apply flex items-center justify-center h-full text-center;
+}
+
+.kanban-error-icon {
+  @apply w-8 h-8 text-red-600 mx-auto mb-2;
+}
+
+/* Responsive adjustments for kanban page */
+@media (max-width: 768px) {
+  .kanban-page .kanban-board {
+    padding: 0.5rem;
+    height: calc(100vh - var(--header-height, 64px) - 1rem);
+  }
+
+  .kanban-page .kanban-columns {
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  .kanban-page .kanban-column {
+    min-width: 280px;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .kanban-page .kanban-board {
+    height: calc(100vh - var(--header-height, 56px) - 0.5rem);
+  }
+  
+  .kanban-page .kanban-column {
+    min-width: 260px;
+    max-width: 260px;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .kanban-page {
+    background-color: hsl(var(--background));
+  }
+
+  .kanban-page .task-card:hover {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  }
+}
