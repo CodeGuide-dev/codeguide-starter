@@ -1,117 +1,88 @@
-# Project Requirements Document: codeguide-starter
-
----
+# Project Requirements Document (PRD)
 
 ## 1. Project Overview
 
-The **codeguide-starter** project is a boilerplate web application that provides a ready-made foundation for any web project requiring secure user authentication and a post-login dashboard. It sets up the common building blocks—sign-up and sign-in pages, API routes to handle registration and login, and a simple dashboard interface driven by static data. By delivering this skeleton, it accelerates development time and ensures best practices are in place from day one.
+**CodeGuide Starter Fullstack** is a command-line starter kit that scaffolds a modern full-stack web application with best practices baked in. It streamlines the initial setup of a React/Next.js frontend, a TypeScript-based API layer, database integration, linting, formatting, and CI configuration. By answering a short series of questions in the CLI, a developer gets a ready-to-run project with sensible defaults for folder structure, test suites, and deployment scripts.
 
-This starter kit is being built to solve the friction developers face when setting up repeated common tasks: credential handling, session management, page routing, and theming. Key objectives include: 1) delivering a fully working authentication flow (registration & login), 2) providing a gated dashboard area upon successful login, 3) establishing a clear, maintainable project structure using Next.js and TypeScript, and 4) demonstrating a clean theming approach with global and section-specific CSS. Success is measured by having an end-to-end login journey in under 200 lines of code and zero runtime type errors.
-
----
+We’re building this kit to help developers—especially teams and solo engineers—avoid repetitive boilerplate work and reduce decision fatigue on day one. Key success criteria include: 1) generating a fully functional project in under two minutes, 2) ensuring the generated code passes linting and basic tests out of the box, and 3) making it easy for users to customize or extend templates without digging through complex configs.
 
 ## 2. In-Scope vs. Out-of-Scope
 
-### In-Scope (Version 1)
-- User registration (sign-up) form with validation
-- User login (sign-in) form with validation
-- Next.js API routes under `/api/auth/route.ts` handling:
-  - Credential validation
-  - Password hashing (e.g., bcrypt)
-  - Session creation or JWT issuance
-- Protected dashboard pages under `/dashboard`:
-  - `layout.tsx` wrapping dashboard content
-  - `page.tsx` rendering static data from `data.json`
-- Global application layout in `/app/layout.tsx`
-- Basic styling via `globals.css` and `dashboard/theme.css`
-- TypeScript strict mode enabled
+In-Scope (Version 1):
+- Interactive CLI that prompts for project name, database choice (SQLite or PostgreSQL), authentication (none or JWT), and styling framework (Tailwind CSS by default).
+- Folder structure scaffolding:
+  - `/pages`, `/components`, `/styles` for Next.js
+  - `/api` or `/server` for backend API routes
+  - `/prisma` or `/db` for database schema and migrations
+  - `/tests` with a sample Jest test
+- Built-in ESLint and Prettier configs, plus Husky pre-commit hook.
+- GitHub Actions workflow template for CI: lint → test → build.
+- Database setup with Prisma ORM, initial migration, and a `User` model.
+- Basic README.md with setup instructions.
 
-### Out-of-Scope (Later Phases)
-- Integration with a real database (PostgreSQL, MongoDB, etc.)
-- Advanced authentication flows (password reset, email verification, MFA)
-- Role-based access control (RBAC)
-- Multi-tenant or white-label theming
-- Unit, integration, or end-to-end testing suites
-- CI/CD pipeline and production deployment scripts
-
----
+Out-of-Scope (Later Phases):
+- Multi-tenant or microservices support.
+- Production monitoring, analytics, or A/B testing setup.
+- Full OAuth/social login flows.
+- Docker or Kubernetes scaffolding.
+- Advanced UI kits (Material UI, Chakra UI) beyond Tailwind CSS.
 
 ## 3. User Flow
 
-A new visitor lands on the root URL and sees a welcome page with options to **Sign Up** or **Sign In**. If they choose Sign Up, they fill in their email, password, and hit “Create Account.” The form submits to `/api/auth/route.ts`, which hashes the password, creates a new user session or token, and redirects them to the dashboard. If any input is invalid, an inline error message explains the issue (e.g., “Password too short”).
+A developer installs the kit globally or runs it via npx (`npx codeguide-starter-fullstack`). They’re greeted by a short wizard that asks for the project name, selects a database (default: SQLite), chooses whether to include JWT authentication, and picks styling preferences. Once they confirm choices, the CLI downloads templates, replaces placeholders (project name, author), installs dependencies, and initializes Git.
 
-Once authenticated, the user is taken to the `/dashboard` route. Here they see a sidebar or header defined by `dashboard/layout.tsx`, and the main panel pulls in static data from `data.json`. They can log out (if that control is present), but otherwise their entire session is managed by server-side cookies or tokens. Returning users go directly to Sign In, submit credentials, and upon success they land back on `/dashboard`. Any unauthorized access to `/dashboard` redirects back to Sign In.
-
----
+After scaffolding completes (~1–2 minutes), the user `cd`s into the new project folder. They run `npm run dev` or `yarn dev` to launch the Next.js frontend and API server. The README.md guides them through running migrations (`npx prisma migrate dev`), generating new components, and running tests (`npm test`). From here, they can start building features immediately.
 
 ## 4. Core Features
 
-- **Sign-Up Page (`/app/sign-up/page.tsx`)**: Form fields for email & password, client-side validation, POST to `/api/auth`.
-- **Sign-In Page (`/app/sign-in/page.tsx`)**: Form fields for email & password, client-side validation, POST to `/api/auth`.
-- **Authentication API (`/app/api/auth/route.ts`)**: Handles both registration and login based on HTTP method, integrates password hashing (bcrypt) and session or JWT logic.
-- **Global Layout (`/app/layout.tsx` + `globals.css`)**: Shared header, footer, and CSS resets across all pages.
-- **Dashboard Layout (`/app/dashboard/layout.tsx` + `dashboard/theme.css`)**: Sidebar or top nav for authenticated flows, section-specific styling.
-- **Dashboard Page (`/app/dashboard/page.tsx`)**: Reads `data.json`, renders it as cards or tables.
-- **Static Data Source (`/app/dashboard/data.json`)**: Example dataset to demo dynamic rendering.
-- **TypeScript Configuration**: `tsconfig.json` with strict mode and path aliases (if any).
-
----
+- **Interactive CLI Wizard:** Command-line prompts for project metadata and feature toggles.
+- **Template Generation:** Creates a standardized folder/file structure with placeholders replaced.
+- **Frontend Setup:** Next.js (React) with TypeScript, Tailwind CSS, sample page/component.
+- **Backend/API Setup:** API routes inside Next.js or Express server, Prisma ORM integration.
+- **Database Schema & Migrations:** Prisma schema with `User` model, initial migration script.
+- **Linting & Formatting:** ESLint, Prettier, Husky pre-commit hook, standardized config.
+- **Testing Kit:** Jest and React Testing Library sample tests for frontend and backend.
+- **CI Configuration:** GitHub Actions workflow for automated lint, test, and build.
+- **README Generator:** Auto-populated README.md with setup and usage instructions.
 
 ## 5. Tech Stack & Tools
 
-- **Framework**: Next.js (App Router) for file-based routing, SSR/SSG, and API routes.
-- **Language**: TypeScript for type safety.
-- **UI Library**: React 18 for component-based UI.
-- **Styling**: Plain CSS via `globals.css` (global reset) and `theme.css` (sectional styling). Can easily migrate to CSS Modules or Tailwind in the future.
-- **Backend**: Node.js runtime provided by Next.js API routes.
-- **Password Hashing**: bcrypt (npm package).
-- **Session/JWT**: NextAuth.js or custom JWT logic (to be decided in implementation).
-- **IDE & Dev Tools**: VS Code with ESLint, Prettier extensions. Optionally, Cursor.ai for AI-assisted coding.
-
----
+- **Frontend:** Next.js (v13+), React (v18+), TypeScript.
+- **Styling:** Tailwind CSS.
+- **Backend/API:** Next.js API routes or Express.js (TypeScript).
+- **Database & ORM:** Prisma ORM with SQLite (default) or PostgreSQL.
+- **Testing:** Jest, React Testing Library.
+- **Linters & Formatters:** ESLint, Prettier, Husky.
+- **CI/CD:** GitHub Actions.
+- **CLI Tooling:** Node.js (≥14.x), Inquirer.js for prompts.
+- **Package Manager:** npm or Yarn.
+- **Optional AI Integration:** GPT-4 via OpenAI API to customize or extend templates on demand.
+- **IDE Plugins:** Support for Cursor AI or Windsurf code assistance.
 
 ## 6. Non-Functional Requirements
 
-- **Performance**: Initial page load under 200 ms on a standard broadband connection. API responses under 300 ms.
-- **Security**:
-  - HTTPS only in production.
-  - Proper CORS, CSRF protection for API routes.
-  - Secure password storage (bcrypt with salt).
-  - No credentials or secrets checked into version control.
-- **Scalability**: Structure must support adding database integration, caching layers, and advanced auth flows without rewiring core app.
-- **Usability**: Forms should give real-time feedback on invalid input. Layout must be responsive (mobile > 320 px).
-- **Maintainability**: Code must adhere to TypeScript strict mode. Linting & formatting enforced by ESLint/Prettier.
-
----
+- **Performance:** CLI scaffolding completes within two minutes on average hardware.
+- **Reliability:** Generated code must pass lint and tests with zero errors.
+- **Security:** No hard-coded secrets; environment variables stored in a `.env` template. JWT setup with strong defaults.
+- **Usability:** Clear CLI prompts and progress feedback. README with step-by-step instructions.
+- **Maintainability:** Template files organized and documented for easy updates.
+- **Compliance:** MIT license in generated project, dependency licenses audited.
 
 ## 7. Constraints & Assumptions
 
-- **No Database**: Dashboard uses only `data.json`; real database integration is deferred.
-- **Node Version**: Requires Node.js >= 14.
-- **Next.js Version**: Built on Next.js 13+ App Router.
-- **Authentication**: Assumes availability of bcrypt or NextAuth.js at implementation time.
-- **Hosting**: Targets serverless or Node.js-capable hosting (e.g., Vercel, Netlify).
-- **Browser Support**: Modern evergreen browsers; no IE11 support required.
-
----
+- Node.js v14 or higher is installed on the user’s machine.
+- Internet access is available to download npm packages and templates.
+- If AI customization is enabled, an OpenAI API key is provided as `OPENAI_API_KEY`.
+- Default database choice (SQLite) requires no external setup; PostgreSQL requires user to supply connection string.
+- Users are familiar with basic Git commands.
 
 ## 8. Known Issues & Potential Pitfalls
 
-- **Static Data Limitation**: `data.json` is only for demo. A real API or database will be needed to avoid stale data.
-  *Mitigation*: Define a clear interface for data fetching so swapping to a live endpoint is trivial.
-
-- **Global CSS Conflicts**: Using global styles can lead to unintended overrides.
-  *Mitigation*: Plan to migrate to CSS Modules or utility-first CSS in Phase 2.
-
-- **API Route Ambiguity**: Single `/api/auth/route.ts` handling both sign-up and sign-in could get complex.
-  *Mitigation*: Clearly branch on HTTP method (`POST /register` vs. `POST /login`) or split into separate files.
-
-- **Lack of Testing**: No test suite means regressions can slip in.
-  *Mitigation*: Build a minimal Jest + React Testing Library setup in an early iteration.
-
-- **Error Handling Gaps**: Client and server must handle edge cases (network failures, malformed input).
-  *Mitigation*: Define a standard error response schema and show user-friendly messages.
+- **Version Drift:** Dependencies in templates might go out of date. Mitigation: pin major versions and schedule periodic updates.
+- **Platform Differences:** Windows vs. macOS path separators or permission issues. Mitigation: use cross-platform Node libraries (e.g., `path` module).
+- **API Rate Limits:** If AI integration is used heavily, OpenAI rate limits may apply. Mitigation: implement simple retry logic and local caching of templates.
+- **Template Conflicts:** Users customizing templates may face merge conflicts. Mitigation: document upgrade path and use versioned templates.
 
 ---
 
-This PRD should serve as the single source of truth for the AI model or any developer generating the next set of technical documents: Tech Stack Doc, Frontend Guidelines, Backend Structure, App Flow, File Structure, and IDE Rules. It contains all functional and non-functional requirements with no ambiguity, enabling seamless downstream development.
+This PRD serves as the single source of truth for subsequent technical documents covering detailed tech stack choices, file structure, frontend and backend guidelines, and CI/CD pipelines. All requirements are defined to avoid ambiguity and support automated or AI-driven generation of the full starter kit.
