@@ -62,6 +62,11 @@ const staticData = {
       url: "#",
       icon: IconUsers,
     },
+    {
+      title: "Snake Game",
+      url: "/dashboard/snake",
+      icon: IconFileAi,
+    },
   ],
   navClouds: [
     {
