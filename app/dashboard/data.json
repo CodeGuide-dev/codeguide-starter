@@ -1,4 +1,5 @@
-[
+{
+  "documents": [
   {
     "id": 1,
     "header": "Cover page",
@@ -611,4 +612,122 @@
     "limit": "29",
     "reviewer": "Assign reviewer"
   }
-]
+  ],
+  "kanban": {
+    "boards": [
+      {
+        "id": "main-board",
+        "title": "Project Management Board",
+        "description": "Main kanban board for tracking project tasks",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-15T10:30:00Z",
+        "columns": [
+          {
+            "id": "todo-column",
+            "title": "To Do",
+            "status": "todo",
+            "maxTasks": 10,
+            "tasks": [
+              {
+                "id": "task-1",
+                "title": "Design user authentication flow",
+                "description": "Create wireframes and user flow for the authentication system",
+                "status": "todo",
+                "priority": "high",
+                "assignee": "Sarah Johnson",
+                "createdAt": "2024-01-01T09:00:00Z",
+                "updatedAt": "2024-01-01T09:00:00Z",
+                "dueDate": "2024-01-20T17:00:00Z"
+              },
+              {
+                "id": "task-2",
+                "title": "Set up development environment",
+                "description": "Configure Docker containers and development tools",
+                "status": "todo",
+                "priority": "medium",
+                "assignee": "Mike Chen",
+                "createdAt": "2024-01-02T10:00:00Z",
+                "updatedAt": "2024-01-02T10:00:00Z"
+              },
+              {
+                "id": "task-3",
+                "title": "Research accessibility requirements",
+                "description": "Investigate WCAG guidelines and compliance needs",
+                "status": "todo",
+                "priority": "medium",
+                "createdAt": "2024-01-03T11:00:00Z",
+                "updatedAt": "2024-01-03T11:00:00Z"
+              }
+            ]
+          },
+          {
+            "id": "inprogress-column",
+            "title": "In Progress",
+            "status": "in-progress",
+            "maxTasks": 5,
+            "tasks": [
+              {
+                "id": "task-4",
+                "title": "Implement user registration API",
+                "description": "Build REST endpoints for user registration with validation",
+                "status": "in-progress",
+                "priority": "high",
+                "assignee": "Alex Rodriguez",
+                "createdAt": "2024-01-04T08:00:00Z",
+                "updatedAt": "2024-01-10T14:30:00Z",
+                "dueDate": "2024-01-18T17:00:00Z"
+              },
+              {
+                "id": "task-5",
+                "title": "Create dashboard mockups",
+                "description": "Design main dashboard layout and components",
+                "status": "in-progress",
+                "priority": "medium",
+                "assignee": "Emma Davis",
+                "createdAt": "2024-01-05T09:30:00Z",
+                "updatedAt": "2024-01-12T16:45:00Z"
+              }
+            ]
+          },
+          {
+            "id": "done-column",
+            "title": "Done",
+            "status": "done",
+            "tasks": [
+              {
+                "id": "task-6",
+                "title": "Project planning and requirements",
+                "description": "Gather and document all project requirements",
+                "status": "done",
+                "priority": "high",
+                "assignee": "Lisa Wong",
+                "createdAt": "2023-12-20T10:00:00Z",
+                "updatedAt": "2024-01-05T15:00:00Z"
+              },
+              {
+                "id": "task-7",
+                "title": "Database schema design",
+                "description": "Design and implement the database schema",
+                "status": "done",
+                "priority": "high",
+                "assignee": "David Kim",
+                "createdAt": "2023-12-22T11:00:00Z",
+                "updatedAt": "2024-01-08T12:30:00Z"
+              },
+              {
+                "id": "task-8",
+                "title": "Set up CI/CD pipeline",
+                "description": "Configure automated testing and deployment",
+                "status": "done",
+                "priority": "medium",
+                "assignee": "James Wilson",
+                "createdAt": "2023-12-25T14:00:00Z",
+                "updatedAt": "2024-01-07T09:15:00Z"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

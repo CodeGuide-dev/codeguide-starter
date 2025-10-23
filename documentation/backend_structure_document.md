@@ -1,179 +1,143 @@
 # Backend Structure Document
 
-This document outlines the backend architecture, hosting, and infrastructure for the **codeguide-starter** project. It uses plain language so anyone can understand how the backend is set up and how it supports the application.
+This document explains how the backend of the `codeguide-starter-fullstack` project is organized, hosted, and maintained. It’s written in plain language so anyone can understand how the pieces fit together and why they were chosen.
 
 ## 1. Backend Architecture
 
-- **Framework and Design Pattern**
-  - We use **Next.js API Routes** to handle all server-side logic. These routes live alongside the frontend code in the same repository, making development and deployment simpler.
-  - The backend follows a **layered pattern**:
-    1. **API Layer**: Receives requests (login, registration, data fetch).  
-    2. **Service Layer**: Contains the core business logic (user validation, password hashing).  
-    3. **Data Access Layer**: Talks to the database via a simple ORM (e.g., Prisma or TypeORM).
+### Overall Design
+- We use Next.js’s built-in API Routes to handle server-side work. Each file under `app/api/` becomes a serverless function.  
+- The backend lives in the same codebase as the frontend, sharing TypeScript types and folder structure.  
+- File-based routing means the folder structure directly maps to URL paths, so there’s no separate routing config.
 
-- **Scalability**
-  - Stateless API routes can scale horizontally—new instances can spin up on demand.  
-  - We can add caching or a message queue (e.g., Redis or RabbitMQ) without changing the core code.
+### Frameworks and Patterns
+- **Next.js API Routes**: Server‐side endpoints written in TypeScript.  
+- **Node.js**: Under the hood, those API routes run on a Node.js environment (v16+).  
+- **Component-Driven**: Business logic is split into small functions that can be re-used by different routes.
 
-- **Maintainability**
-  - Code for each feature is grouped by route (authentication, dashboard).  
-  - A service layer separates complex logic from request handling.
-
-- **Performance**
-  - Lightweight Node.js handlers keep response times low.  
-  - Future use of database connection pooling and Redis for caching repeated queries.
+### Scalability, Maintainability, Performance
+- **Scalability**: Serverless functions auto-scale with demand—no need to manage servers.  
+- **Maintainability**: Keeping backend code next to frontend code simplifies sharing types and utilities.  
+- **Performance**: Next.js pre-optimizes routes and cold starts are minimized on platforms like Vercel.
 
 ## 2. Database Management
 
-- **Database Choice**
-  - We recommend **PostgreSQL** for structured data and reliable transactions.  
-  - In-memory caching can be added later with **Redis** for session tokens or frequently read data.
+### Current Setup (Mock Data)
+- We use a local JSON file (`data.json`) as a stand-in for a real database during development.  
+- This file lives in the repo and contains an array of objects representing dashboard items.
 
-- **Data Storage and Access**
-  - Use an ORM like **Prisma** or **TypeORM** to map JavaScript/TypeScript objects to database tables.
-  - Connection pooling ensures efficient use of database connections under load.
-  - Migrations track schema changes over time, keeping development, staging, and production in sync.
+### Future Database Options
+- When migrating to a real database, you could choose:
+  - **SQL (PostgreSQL, MySQL)** for structured, relational data.  
+  - **NoSQL (MongoDB, DynamoDB)** for flexible, document-oriented storage.
 
-- **Data Practices**
-  - Passwords are never stored in plain text—they are salted and hashed with **bcrypt** before saving.
-  - All outgoing data is typed and validated to prevent malformed records.
+### Data Access
+- In the mock version, API routes read `data.json` directly.  
+- In a real setup, you’d replace that read with a database query using an ORM like Prisma or a driver like `pg`.
 
 ## 3. Database Schema
 
-### Human-Readable Format
+### Mock Data (`data.json`)
+The JSON file holds an array of dashboard items. Each item has:
+- **id** (string): Unique identifier.  
+- **title** (string): Name of the item or metric.  
+- **value** (number): Numeric data to display.  
+- **details** (string): Optional description or extra info.
 
-- **Users**
-  - **id**: Unique identifier  
-  - **email**: User’s email address (unique)  
-  - **password_hash**: Securely hashed password  
-  - **created_at**: Account creation timestamp
+Example in everyday terms:
+- Item 1: id = "item1", title = "Total Users", value = 1024, details = "Count of all registered users"  
+- Item 2: id = "item2", title = "Active Sessions", value = 87, details = "Users currently online"
 
-- **Sessions**
-  - **id**: Unique session record  
-  - **user_id**: Links to a user  
-  - **token**: Random string for authentication  
-  - **expires_at**: When the token stops working  
-  - **created_at**: When the session was created
-
-- **DashboardItems** *(optional for dynamic data)*
-  - **id**: Unique record  
-  - **title**: Item title  
-  - **content**: Item details  
-  - **created_at**: When the item was added
-
-### SQL Schema (PostgreSQL)
+### (Future) SQL Schema Example
+If you switch to PostgreSQL, your `dashboard_items` table might look like:
 ```sql
--- Users table
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- Sessions table
-CREATE TABLE sessions (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(id) ON DELETE CASCADE,
-  token VARCHAR(255) UNIQUE NOT NULL,
-  expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- Dashboard items table
 CREATE TABLE dashboard_items (
-  id SERIAL PRIMARY KEY,
+  id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
-  content TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
+  value INTEGER NOT NULL,
+  details TEXT
 );
-```  
+```
 
 ## 4. API Design and Endpoints
 
-- **Approach**: We follow a **RESTful** style, grouping related endpoints under `/api` directories.
+We follow a simple RESTful style using Next.js API Routes.
 
-- **Key Endpoints**
-  - `POST /api/auth/register`  
-    • Accepts `{ email, password }`  
-    • Creates a new user and issues a session token  
-  - `POST /api/auth/login`  
-    • Accepts `{ email, password }`  
-    • Verifies credentials and returns a session token  
-  - `POST /api/auth/logout`  
-    • Invalidates the session token on the server  
-  - `GET /api/dashboard/data`  
-    • Requires a valid session  
-    • Returns user-specific data or dashboard items  
+### Key Endpoints
+- **POST /api/auth**  
+  - Purpose: Sign up or sign in a user.  
+  - Input: `{ email: string, password: string }`  
+  - Output: Success status, user session or error message.
 
-- **Communication**
-  - Frontend sends JSON requests; backend replies with JSON and appropriate HTTP status codes.  
-  - Protected routes check for a valid session token (in cookies or Authorization header).
+- **GET /api/data** (optional)  
+  - Purpose: Fetch mock dashboard items from `data.json`.  
+  - Output: Array of items.
+
+### How Frontend Calls These
+1. Sign-in form submits credentials to `/api/auth`.  
+2. On success, Next.js sets a session cookie and redirects to `/dashboard`.  
+3. Dashboard page fetches `/api/data` to display items.
 
 ## 5. Hosting Solutions
 
-- **Cloud Provider**:  
-  - **Vercel** (recommended) offers seamless Next.js deployments, auto-scaling, and built-in CDN.  
-  - Alternatively, **Netlify** or any Node.js-capable host will work.
+### Chosen Platform: Vercel
+- **Why Vercel?**  
+  - Built by the creators of Next.js—seamless integration.  
+  - Automatic global CDN for static assets.  
+  - Serverless functions run our API Routes without setup.
 
-- **Benefits**
-  - **Reliability**: Global servers and failover across regions.  
-  - **Scalability**: Auto-scale serverless functions based on traffic.  
-  - **Cost-Effectiveness**: Pay-per-use model means low cost for small projects.
+### Benefits
+- **Reliability**: Automatic health checks and rollbacks.  
+- **Scalability**: Instantly scales serverless functions with traffic.  
+- **Cost-Effective**: Free tier available; pay only for extra usage.
 
 ## 6. Infrastructure Components
 
-- **Load Balancer**
-  - Provided by the hosting platform—distributes API requests across function instances.
+### Load Balancing and CDN
+- Vercel uses its edge network to distribute traffic across regions.  
+- Static files (CSS, images) served from a CDN close to users.
 
-- **CDN (Content Delivery Network)**
-  - Vercel’s global edge network caches static assets (CSS, JS, images) for faster page loads.
+### Caching Mechanisms
+- **ISR (Incremental Static Regeneration)** in Next.js can cache pages and update them in the background.  
+- **HTTP Caching** headers can be configured for API responses.
 
-- **Caching**
-  - **Redis** (optional) for session storage or caching dashboard queries to reduce database load.
-
-- **Object Storage**
-  - For file uploads or backups, integrate with AWS S3 or similar services.
-
-- **Message Queue**
-  - In future, use **RabbitMQ** or **Kafka** for background tasks (e.g., email notifications).
+### Content Delivery Networks
+- All static assets are automatically uploaded and distributed by Vercel’s CDN.
 
 ## 7. Security Measures
 
-- **Authentication & Authorization**
-  - Passwords hashed with **bcrypt** and salted.  
-  - Session tokens stored in secure, HttpOnly cookies or Authorization headers.  
-  - Protected endpoints verify tokens before proceeding.
+### Authentication & Authorization
+- **Secure Cookies**: Session tokens are stored in HTTP-only cookies to prevent JavaScript access.  
+- **Password Handling**: Even in mock mode, follow best practice by hashing passwords with a library like `bcrypt`.
 
-- **Data Encryption**
-  - **HTTPS/TLS** encrypts data in transit.  
-  - Database connections use SSL to encrypt data between the app and the database.
+### Data Protection
+- **Input Validation**: Check and sanitize all incoming data on the server.  
+- **Redirect Protection**: Unauthenticated users are sent back to `/sign-in` if they try to access protected routes.
 
-- **Input Validation**
-  - Every incoming request is validated (e.g., valid email format, password length) to prevent SQL injection or other attacks.
-
-- **Web Security Best Practices**
-  - Enable **CORS** policies to limit allowed origins.  
-  - Use **CSRF tokens** or same-site cookies to prevent cross-site requests.  
-  - Set secure headers with **Helmet** or a similar middleware.
+### Compliance and Best Practices
+- Plan for GDPR by ensuring user data can be erased or exported upon request.  
+- Prepare to add CSRF tokens if you introduce cookie-based sessions in production.
 
 ## 8. Monitoring and Maintenance
 
-- **Performance Monitoring**
-  - Integrate **Sentry** or **LogRocket** for real-time crash reporting and performance tracing.  
-  - Use Vercel’s built-in analytics to track request latencies and error rates.
+### Performance Monitoring
+- **Vercel Analytics**: Built-in metrics for response times, cold starts, and bandwidth.  
+- **Optional Tools**: Integrate Sentry or Datadog to track errors and performance events in more detail.
 
-- **Logging**
-  - Structured logs (JSON) for all API requests and errors, shipped to a log management service like **Datadog** or **Logflare**.
+### Logging
+- Use `console.log` in development; in production, route logs to a service like Logflare or Datadog.
 
-- **Health Checks**
-  - Define a `/health` endpoint that returns a 200 status if the service is up and the database is reachable.
-
-- **Maintenance Strategies**
-  - Automated migrations run on deploy to keep the database schema up to date.  
-  - Scheduled dependency audits and security scans (e.g., `npm audit`).
-  - Regular backups of the database (daily or weekly depending on usage).
+### Maintenance Strategies
+- **Automated Tests**: Run linting and basic API tests via GitHub Actions on every pull request.  
+- **Dependency Updates**: Schedule regular checks (Dependabot) and use `npm audit` to identify vulnerabilities.  
+- **Backups**: If you adopt a real database, set up automated backups (e.g., daily snapshots on PostgreSQL).
 
 ## 9. Conclusion and Overall Backend Summary
 
-The backend for **codeguide-starter** is built on Next.js API Routes and Node.js, paired with PostgreSQL for data and optional Redis for caching. It follows a clear layered architecture that keeps code easy to maintain and extend. With RESTful endpoints for authentication and data, secure practices like password hashing and HTTPS, and hosting on Vercel for scalability and global performance, this setup meets the project’s goals for a fast, secure, and developer-friendly foundation. Future enhancements—such as background job queues, advanced monitoring, or richer data models—can be added without disrupting the core structure.
+This backend uses Next.js API Routes and a local JSON file as a quick, zero-config starting point. It lives next to the frontend for shared types and easy deployment. Hosted on Vercel, it scales seamlessly without manual server management. Key highlights:
+
+- **Serverless Architecture**: No servers to maintain—functions scale automatically.  
+- **Local Mock Database**: Simplifies development; ready to swap to SQL or NoSQL.  
+- **Secure by Default**: HTTP-only cookies and input checks protect user data.  
+- **Easy Monitoring**: Vercel Analytics plus optional Sentry/Datadog integrations.
+
+As your project grows, you can replace the mock data with a real database, integrate third-party services, and expand the API surface—all without changing the underlying structure. This setup gives you a clear path from prototype to production.

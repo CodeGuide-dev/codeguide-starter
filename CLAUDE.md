@@ -1,4 +1,4 @@
-# Claude Code Task Management Guide
+# Codespace Task Management Guide
 
 ## Documentation Available
 
