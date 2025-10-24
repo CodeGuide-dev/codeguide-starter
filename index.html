@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Website Builder</h1>
+        <p>Enter a description of the website you want to create, and watch AI models build it for you in real-time.</p>
+
+        <div class="input-container">
+            <input type="password" id="apiKeyInput" placeholder="Enter your API Key here">
+            <textarea id="promptInput" placeholder="e.g., A modern portfolio website for a photographer with a dark theme... (Double-click for an example)"></textarea>
+            <button id="generateBtn">
+                <span class="btn-text">Generate Websites</span>
+            </button>
+        </div>
+
+        <div id="progressSection" style="display: none;">
+            <div class="llm-badges">
+                <span class="llm-badge">GLM-4.6</span>
+                <span class="llm-badge">qwen3-max</span>
+                <span class="llm-badge">qwen3-coder</span>
+                <span class="llm-badge">tbao</span>
+                <span class="llm-badge">kimi-k2</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
+            <p id="progressText">Initializing...</p>
+        </div>
+
+        <div id="resultsContainer"></div>
+
+        <div id="emptyState" style="display: block;">
+            <h2>Your generated websites will appear here</h2>
+            <p>Get started by entering a prompt above.</p>
+        </div>
+    </div>
+
+    <div id="fullscreenPreview">
+        <div class="fullscreen-header">
+            <h3>Live Preview</h3>
+            <span id="fullscreenLLMName"></span>
+            <div class="device-toggle">
+                <button onclick="toggleDeviceView('desktop')">Desktop</button>
+                <button onclick="toggleDeviceView('tablet')">Tablet</button>
+                <button onclick="toggleDeviceView('mobile')">Mobile</button>
+            </div>
+            <button class="close-btn" onclick="closeFullscreen()">×</button>
+        </div>
+        <div id="fullscreenBody" class="fullscreen-body desktop">
+            <iframe id="fullscreenIframe"></iframe>
+        </div>
+    </div>
+
+    <div id="codeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>HTML Code</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <pre><code id="modalCode"></code></pre>
+            <div class="modal-footer">
+                <button onclick="copyModalCode()">Copy Code</button>
+                <button onclick="downloadCode()">Download HTML</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
